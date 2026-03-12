@@ -1,151 +1,75 @@
-# HULT-prize-project
-# 🎬 Video Classification Project
+# UCF101 Video Classification Project
 
-### Deep Learning Model for Human Action Recognition (UCF101)
+This project implements a deep learning pipeline for human action recognition using the UCF101 dataset. It uses a hybrid approach:
+1. **Feature Extraction**: Uses a pretrained InceptionV3 model to extract spatial features from video frames.
+2. **Sequence Modeling**: Uses an LSTM/GRU-based RNN to model the temporal dependencies between frames and classify the action.
 
-This repository presents a complete deep-learning pipeline for **video action recognition** using the **UCF101** dataset.
-The project involves **data preparation, model construction, training, evaluation, and real-world inference**.
-All implementation steps are contained in:
-
-📄 **HULT_prize_project.ipynb**
-
----
-
-## 📘 Overview
-
-Human action recognition is an important area in Computer Vision with applications in:
-
-* Surveillance systems
-* Sports analysis
-* Human-computer interaction
-* Health and rehabilitation monitoring
-
-This project builds a TensorFlow-based classification model capable of recognizing human actions in short video clips.
-
----
-
-## 🚀 Key Features
-
-### ✔ Dataset Handling
-
-* Automated download of **UCF101**
-* Video trimming and frame extraction
-* Consistent preprocessing (resizing, normalization)
-* Building training & validation pipelines
-
-### ✔ Deep Learning Model
-
-* Pretrained **ResNet50** / TensorFlow Hub feature extractor
-* Custom dense classification layers
-* Optimized for multi-class video recognition
-* Trained using GPU acceleration (Colab-ready)
-
-### ✔ Evaluation
-
-* Accuracy & loss analysis
-* Prediction on unseen videos
-* Confusion-matrix-ready outputs
-
-### ✔ Model Export
-
-* Fully saved model (SavedModel format)
-* Loadable for inference without retraining
-
-### ✔ Real-world Inference
-
-* Upload a video file
-* Preprocess frames
-* Run prediction
-* Output the most likely action class
-
----
-
-## 📂 Project Structure
+## Project Structure
 
 ```
-├── HULT_prize_project.ipynb     # Main implementation notebook
-├── models/                      # Saved trained models
-├── README.md                    # Documentation (this file)
-└── dataset/                     # UCF101 after preprocessing (optional/not included)
+├── main.py              # Entry point for the pipeline
+├── src/                 # Source code
+│   ├── config.py        # Configuration and hyperparameters
+│   ├── data_preparation.py # Dataset downloading and processing
+│   ├── feature_extraction.py # Feature extraction logic
+│   ├── model.py         # RNN model architecture
+│   ├── train.py         # Training pipeline
+│   ├── predict.py       # Inference logic
+│   └── utils.py         # Video processing utilities
+├── models/              # Directory for saved models (ignored by git)
+├── data/                # Directory for dataset (ignored by git)
+├── requirements.txt     # Python dependencies
+└── README.md            # This file
 ```
 
----
+## Setup
 
-## 🧪 Technologies Used
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-* **Python 3.10+**
-* **TensorFlow** & **TensorFlow Hub**
-* **OpenCV**
-* **NumPy / Pandas**
-* **Matplotlib** (visualizations)
-* **Google Colab** (recommended runtime)
+2. **Prepare the dataset**:
+   This will download the videos for the selected classes and create the training/test splits.
+   ```bash
+   python main.py prepare
+   ```
 
----
+## Usage
 
-## 📥 Dataset: UCF101
+### Training
 
-UCF101 is a benchmark dataset for human action recognition containing **13,320 videos** across **101 action classes**.
+To train the model from scratch:
+```bash
+python main.py train
+```
+The best model will be saved in `models/final_model`.
 
-More information:
-[https://www.crcv.ucf.edu/data/UCF101.php](https://www.crcv.ucf.edu/data/UCF101.php)
+### Inference
 
-The notebook automatically:
-✔ Downloads the dataset
-✔ Extracts videos
-✔ Organizes training/testing folders
+To predict the action in a single video:
+```bash
+python main.py predict path/to/video.avi
+```
 
----
+### Full Pipeline
 
-## 🧠 Model Architecture (Summary)
+To run both preparation and training:
+```bash
+python main.py full
+```
 
-The model follows this structure:
+## Configuration
 
-1. **Frame Extraction Block**
+You can modify classes, hyperparameters, and paths in `src/config.py`.
 
-   * Samples frames from each video
-   * Resizes & normalizes
+Default classes:
+- HandstandPushups
+- HandstandWalking
+- PullUps
+- Punch
+- PushUps
 
-2. **Feature Extraction Block**
-
-   * Pretrained ResNet50 (TF-Hub)
-   * Extracts high-level spatial features
-
-3. **Classification Head**
-
-   * Global average pooling
-   * Dense layers
-   * Softmax output (101 classes)
-
-The architecture balances **accuracy** and **training practicality**.
-
----
-
-## ▶️ How to Run the Project
-
-1. Open the notebook **HULT_prize_project.ipynb**
-2. Install required packages
-3. Run dataset preparation cells
-4. Train the model
-5. Evaluate performance
-6. Test on custom videos
-
-The notebook is fully commented for clarity.
-
----
-
-## 📊 Potential Improvements
-
-* Switching to 3D CNN architectures (I3D, C3D)
-* Using LSTM/GRU for temporal sequence modeling
-* Deploying as a web/app interface
-* Converting to TensorFlow Lite for mobile inference
-* Increasing frame sampling efficiency
-
----
-
-## 👤 Author
-
+## Author
 **Youssef Elfar**
-Computer Vision & Machine Learning Enthusiast
-
-
+Refactored and modularized for better maintainability.
