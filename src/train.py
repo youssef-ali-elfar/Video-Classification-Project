@@ -34,8 +34,9 @@ def prepare_all_videos(df, feature_extractor, label_processor):
             frame_features[idx, :length, :] = features
             frame_masks[idx, :length] = 1
 
-        if idx % 50 == 0:
-            print(f"Processed {idx}/{num_samples} videos")
+        if (idx + 1) % 10 == 0 or (idx + 1) == num_samples:
+            percent = ((idx + 1) / num_samples) * 100
+            print(f"Processed {idx + 1}/{num_samples} videos ({percent:.1f}%)")
             gc.collect()
 
     return (frame_features, frame_masks), labels
