@@ -19,21 +19,29 @@ def list_ucf_videos():
 
 def download_videos(videos_dict):
     unverified_context = ssl._create_unverified_context()
+    total_videos = sum(len(videos) for videos in videos_dict.values())
+    count = 0
+
     for classname, video_list in videos_dict.items():
         class_dir = os.path.join(DATA_ROOT, classname)
         os.makedirs(class_dir, exist_ok=True)
 
         for video in video_list:
+            count += 1
             video_path = os.path.join(class_dir, video)
             if not os.path.exists(video_path):
                 url = UCF_ROOT + video
-                print(f"Downloading {url} to {video_path}")
+                print(f"[{count}/{total_videos}] Downloading {url}...")
                 try:
                     data = urllib.request.urlopen(url, context=unverified_context).read()
                     with open(video_path, "wb") as f:
                         f.write(data)
                 except Exception as e:
                     print(f"Failed to download {url}: {e}")
+            else:
+                # Still show progress even if file exists
+                if count % 10 == 0 or count == total_videos:
+                    print(f"[{count}/{total_videos}] Skipping {video} (already exists)")
 
 def create_dataset_csv():
     data = []
