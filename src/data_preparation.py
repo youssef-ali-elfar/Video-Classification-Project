@@ -19,21 +19,30 @@ def list_ucf_videos():
 
 def download_videos(videos_dict):
     unverified_context = ssl._create_unverified_context()
+    total_videos = sum(len(v) for v in videos_dict.values())
+    downloaded_count = 0
+
     for classname, video_list in videos_dict.items():
         class_dir = os.path.join(DATA_ROOT, classname)
         os.makedirs(class_dir, exist_ok=True)
 
         for video in video_list:
+            downloaded_count += 1
             video_path = os.path.join(class_dir, video)
             if not os.path.exists(video_path):
                 url = UCF_ROOT + video
-                print(f"Downloading {url} to {video_path}")
+                percent = (downloaded_count / total_videos) * 100
+                print(f"\rDownloading video {downloaded_count}/{total_videos} ({percent:5.1f}%) - {video:.30s}...", end="", flush=True)
                 try:
                     data = urllib.request.urlopen(url, context=unverified_context).read()
                     with open(video_path, "wb") as f:
                         f.write(data)
                 except Exception as e:
-                    print(f"Failed to download {url}: {e}")
+                    print(f"\nFailed to download {url}: {e}")
+            elif downloaded_count % 10 == 0 or downloaded_count == total_videos:
+                percent = (downloaded_count / total_videos) * 100
+                print(f"\rChecked/Downloaded {downloaded_count}/{total_videos} ({percent:5.1f}%)", end="", flush=True)
+    print() # New line after downloads
 
 def create_dataset_csv():
     data = []

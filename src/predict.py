@@ -14,7 +14,7 @@ def prepare_single_video(frames, feature_extractor):
     frame_features = np.zeros(shape=(1, MAX_SEQ_LENGTH, NUM_FEATURES), dtype="float32")
 
     if length > 0:
-        features = feature_extractor.predict(frames[:length])
+        features = feature_extractor.predict(frames[:length], verbose=0)
         frame_features[0, :length, :] = features
         frame_mask[0, :length] = 1
 
@@ -29,16 +29,23 @@ def predict_video(video_path, model_path, feature_extractor=None):
     frames = load_video(video_path)
     frame_features, frame_mask = prepare_single_video(frames, feature_extractor)
 
-    probabilities = model.predict([frame_features, frame_mask])[0]
+    probabilities = model.predict([frame_features, frame_mask], verbose=0)[0]
 
     # We assume the model was trained with CLASSES in config
+    print("\nPrediction Results:")
+    print("-" * 30)
     results = []
     for i in np.argsort(probabilities)[::-1]:
+        prob = probabilities[i]
+        bar_length = int(prob * 20)
+        bar = "█" * bar_length + "░" * (20 - bar_length)
+
         results.append({
             "class": CLASSES[i],
-            "probability": probabilities[i]
+            "probability": prob
         })
-        print(f"  {CLASSES[i]}: {probabilities[i] * 100:5.2f}%")
+        print(f"{CLASSES[i]:<20} {bar} {prob * 100:5.2f}%")
+    print("-" * 30)
 
     return results
 

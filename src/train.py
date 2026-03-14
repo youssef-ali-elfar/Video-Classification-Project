@@ -30,13 +30,16 @@ def prepare_all_videos(df, feature_extractor, label_processor):
 
         if length > 0:
             # Optimize: predict on all frames at once
-            features = feature_extractor.predict(frames[:length])
+            features = feature_extractor.predict(frames[:length], verbose=0)
             frame_features[idx, :length, :] = features
             frame_masks[idx, :length] = 1
 
+        percent = (idx + 1) / num_samples * 100
+        print(f"\rProcessed {idx + 1}/{num_samples} videos ({percent:5.1f}%)", end="", flush=True)
         if idx % 50 == 0:
-            print(f"Processed {idx}/{num_samples} videos")
             gc.collect()
+
+    print() # New line after progress
 
     return (frame_features, frame_masks), labels
 
