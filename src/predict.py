@@ -21,31 +21,42 @@ def prepare_single_video(frames, feature_extractor):
     return frame_features, frame_mask
 
 def predict_video(video_path, model_path, feature_extractor=None):
+    print(f"🎬 Loading video: {os.path.basename(video_path)}...")
+    frames = load_video(video_path)
+    if len(frames) == 0:
+        print("❌ Error: Could not load any frames from the video.")
+        return []
+
+    print("🤖 Initializing AI models (this may take a moment)...")
     if feature_extractor is None:
         feature_extractor = build_feature_extractor()
-
     model = keras.models.load_model(model_path)
 
-    frames = load_video(video_path)
+    print("🧠 Extracting features...")
     frame_features, frame_mask = prepare_single_video(frames, feature_extractor)
 
+    print("✨ Classifying action...")
     probabilities = model.predict([frame_features, frame_mask], verbose=0)[0]
 
-    # We assume the model was trained with CLASSES in config
-    print("\nPrediction Results:")
-    print("-" * 30)
-    results = []
-    for i in np.argsort(probabilities)[::-1]:
-        prob = probabilities[i]
-        bar_length = int(prob * 20)
-        bar = "█" * bar_length + "░" * (20 - bar_length)
+    print("\n" + "═" * 48)
+    print(f"{'ACTION CLASS':<20} {'CONFIDENCE':<25}")
+    print("─" * 48)
 
-        results.append({
-            "class": CLASSES[i],
-            "probability": prob
-        })
-        print(f"{CLASSES[i]:<20} {bar} {prob * 100:5.2f}%")
-    print("-" * 30)
+    results = []
+    sorted_indices = np.argsort(probabilities)[::-1]
+    for idx, i in enumerate(sorted_indices):
+        prob = probabilities[i]
+        bar = "█" * int(prob * 20) + "░" * (20 - int(prob * 20))
+        label = CLASSES[i]
+
+        if idx == 0: # Highlight top prediction
+            print(f"\033[1;32m{label:<20}\033[0m {bar} {prob * 100:5.2f}%")
+        else:
+            print(f"{label:<20} {bar} {prob * 100:5.2f}%")
+        results.append({"class": label, "probability": prob})
+
+    print("═" * 48)
+    print(f"✅ Result: \033[1m{CLASSES[sorted_indices[0]]}\033[0m\n")
 
     return results
 
