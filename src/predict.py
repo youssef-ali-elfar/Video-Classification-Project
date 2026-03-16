@@ -56,7 +56,18 @@ def predict_video(video_path, model_path, feature_extractor=None):
         results.append({"class": label, "probability": prob})
 
     print("═" * 48)
-    print(f"✅ Result: \033[1m{CLASSES[sorted_indices[0]]}\033[0m\n")
+
+    top_prob = probabilities[sorted_indices[0]]
+    top_label = CLASSES[sorted_indices[0]]
+
+    if top_prob >= 0.8:
+        status, color = "✅ Confident", "\033[1;32m" # Green
+    elif top_prob >= 0.5:
+        status, color = "⚠️  Uncertain", "\033[1;33m" # Yellow
+    else:
+        status, color = "❓ Low Confidence", "\033[1;31m" # Red
+
+    print(f"{status}: {color}{top_label}\033[0m ({top_prob * 100:.1f}%)\n")
 
     return results
 
