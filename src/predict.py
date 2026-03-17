@@ -46,8 +46,18 @@ def predict_video(video_path, model_path, feature_extractor=None):
     sorted_indices = np.argsort(probabilities)[::-1]
     for idx, i in enumerate(sorted_indices):
         prob = probabilities[i]
-        bar = "█" * int(prob * 20) + "░" * (20 - int(prob * 20))
         label = CLASSES[i]
+
+        # Color-coded confidence bar for easier scanning
+        if prob >= 0.8:
+            color = "\033[32m" # Green
+        elif prob >= 0.5:
+            color = "\033[33m" # Yellow
+        else:
+            color = "\033[90m" # Grey
+
+        bar_len = int(prob * 20)
+        bar = color + "█" * bar_len + "\033[0m" + "░" * (20 - bar_len)
 
         if idx == 0: # Highlight top prediction
             print(f"\033[1;32m{label:<20}\033[0m {bar} {prob * 100:5.2f}%")
