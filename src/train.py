@@ -6,7 +6,7 @@ from tensorflow import keras
 import gc
 
 from .config import DATA_ROOT, MODELS_ROOT, MAX_SEQ_LENGTH, NUM_FEATURES, CLASSES, EPOCHS
-from .utils import load_video
+from .utils import load_video, print_header
 from .feature_extraction import build_feature_extractor
 from .model import get_sequence_model
 
@@ -54,11 +54,13 @@ def train_pipeline():
 
     feature_extractor = build_feature_extractor()
 
+    print_header("Preprocessing Dataset")
     print("Preparing training data...")
     train_data, train_labels = prepare_all_videos(train_df, feature_extractor, label_processor)
-    print("Preparing test data...")
+    print("\nPreparing test data...")
     test_data, test_labels = prepare_all_videos(test_df, feature_extractor, label_processor)
 
+    print_header("Model Architecture & Training")
     checkpoint_path = os.path.join(MODELS_ROOT, "video_classifier_checkpoint")
     checkpoint = keras.callbacks.ModelCheckpoint(
         checkpoint_path, save_weights_only=True, save_best_only=True, verbose=1
@@ -75,9 +77,10 @@ def train_pipeline():
         callbacks=[checkpoint],
     )
 
+    print_header("Evaluation")
     seq_model.load_weights(checkpoint_path)
     _, accuracy = seq_model.evaluate([test_data[0], test_data[1]], test_labels)
-    print(f"Test accuracy: {round(accuracy * 100, 2)}%")
+    print(f"\n✅ Test accuracy: {round(accuracy * 100, 2)}%")
 
     model_save_path = os.path.join(MODELS_ROOT, "final_model")
     seq_model.save(model_save_path)

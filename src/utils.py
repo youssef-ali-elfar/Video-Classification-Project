@@ -36,3 +36,19 @@ def save_as_gif(frames, output_path, fps=10):
     converted_frames = frames.astype(np.uint8)
     imageio.mimsave(output_path, converted_frames, fps=fps)
     print(f"Saved animation to {output_path}")
+
+def get_video_info(path):
+    """Returns FPS, frame count, and duration of a video."""
+    cap = cv2.VideoCapture(path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    duration = frame_count / fps if fps > 0 else 0
+    cap.release()
+    return fps, frame_count, duration
+
+def print_header(title):
+    """Prints a styled ASCII header for CLI sections."""
+    width = 50
+    print("\n" + "═" * width)
+    print(f" {title.upper()} ".center(width, "■"))
+    print("═" * width + "\n")

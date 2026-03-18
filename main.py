@@ -5,6 +5,7 @@ import os
 from src.data_preparation import prepare_data
 from src.train import train_pipeline
 from src.predict import predict_video
+from src.utils import print_header
 
 def main():
     parser = argparse.ArgumentParser(description="UCF101 Video Classification Pipeline")
@@ -27,10 +28,13 @@ def main():
     args = parser.parse_args()
 
     if args.command == "prepare":
+        print_header("Data Preparation")
         prepare_data()
     elif args.command == "train":
+        print_header("Model Training")
         train_pipeline()
     elif args.command == "predict":
+        print_header("Inference")
         if not os.path.exists(args.video_path):
             print(f"Error: Video file {args.video_path} not found.")
             sys.exit(1)
@@ -39,6 +43,7 @@ def main():
             sys.exit(1)
         predict_video(args.video_path, args.model_path)
     elif args.command == "full":
+        print_header("Full Pipeline")
         prepare_data()
         train_pipeline()
     else:
