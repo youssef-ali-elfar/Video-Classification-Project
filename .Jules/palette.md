@@ -8,3 +8,7 @@
 ## 2026-03-20 - Multi-Tiered Confidence Indicators
 **Learning:** Generic "Result" outputs in ML tools can be misleading if the model is uncertain. Categorizing results into visual tiers (Confident, Uncertain, Low Confidence) using color and text labels improves interpretability and accessibility.
 **Action:** Always provide a confidence-aware status indicator for ML predictions in CLI outputs.
+
+## 2026-03-22 - Actionable Guidance for Low-Confidence Results
+**Learning:** Users can feel stuck or disappointed when a model gives a low-confidence result without context. Providing immediate, actionable tips (e.g., lighting, positioning) transforms a "failure" into a helpful guidance moment.
+**Action:** Accompany low-confidence or uncertain ML outputs with specific suggestions on how the user can improve the input data for better performance.

@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from .config import MAX_SEQ_LENGTH, NUM_FEATURES, CLASSES
-from .utils import load_video
+from .utils import load_video, get_video_info
 from .feature_extraction import build_feature_extractor
 
 def prepare_single_video(frames, feature_extractor):
@@ -21,7 +21,9 @@ def prepare_single_video(frames, feature_extractor):
     return frame_features, frame_mask
 
 def predict_video(video_path, model_path, feature_extractor=None):
-    print(f"🎬 Loading video: {os.path.basename(video_path)}...")
+    fps, frame_count, duration = get_video_info(video_path)
+    print(f"🎬 Loading video: {os.path.basename(video_path)} ({duration:.1f}s, {fps:.1f} FPS)...")
+
     frames = load_video(video_path)
     if len(frames) == 0:
         print("❌ Error: Could not load any frames from the video.")
@@ -68,6 +70,9 @@ def predict_video(video_path, model_path, feature_extractor=None):
         status, color = "❓ Low Confidence", "\033[1;31m" # Red
 
     print(f"{status}: {color}{top_label}\033[0m ({top_prob * 100:.1f}%)\n")
+
+    if top_prob < 0.5:
+        print("💡 Tip: Try a clearer video with better lighting or centered action for better results.\n")
 
     return results
 
